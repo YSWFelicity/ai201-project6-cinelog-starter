@@ -21,9 +21,9 @@
 **Tradeoff acknowledged:** Defaulting to private would better follow a privacy-first principle and would protect users who may not realize that a watchlist can reveal personal interests. It would also avoid accidental disclosure, which is more difficult to undo than a missed sharing opportunity. The cost is additional friction: users who joined CineLog to share and discover films would have to opt in for every entry or find a bulk visibility setting, and many entries could remain private unintentionally. I accept the privacy cost of the public default only with clear disclosure and accessible controls; if the product cannot provide those safeguards, I would change the default to private.
 
 ## Comment 5 — Sort order
-**My position:**
-**Reasoning:**
-**Engagement with reviewer's point:**
+**My position:** I agree with the maintainer and changed the default watchlist order from alphabetical by film title to `date_added` descending, so the most recently added film appears first.
+**Reasoning:** A watchlist primarily records future viewing intent. Immediately after saving a film, the most common next action is to confirm it was saved or return to the films the user was recently considering. Recency order supports that behavior directly and preserves the meaningful sequence in which the user built the list. It also matches `get_collection()`, which already presents newly added collection entries first, so users encounter one consistent default ordering across both personal lists. Alphabetical order is useful when locating a known title, but it is a less informative default because it discards the user's recent activity; search or an explicit title-sort control would serve that lookup behavior better.
+**Engagement with reviewer's point:** The maintainer argued that most users want to see what they added recently. I find that persuasive because a newly saved item would otherwise jump to an unrelated location based on its title, making the save action harder to verify and hiding current viewing priorities among older entries. The tradeoff is that scanning a long watchlist for a particular title becomes less predictable. I accept that cost for the default view, while recognizing that alphabetical sorting should remain a useful optional view if the product later supports selectable sort modes.
 
 ## Comment 6 — Rebase
 **What conflicted:**

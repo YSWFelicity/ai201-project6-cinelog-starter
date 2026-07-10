@@ -8,8 +8,8 @@
 **How I verified:** Searched the entire project for both function names, confirmed there were no remaining `save_to_watchlist` references, and ran the test suite.
 
 ## Comment 2 — Deduplication
-**What I did:**
-**How I verified:**
+**What I did:** Added `AlreadyInWatchlistError` and made `add_to_watchlist()` query for an existing entry with the same `user_id` and `film_id` before creating one. A duplicate now raises the dedicated error before any database write, following `add_to_collection()`'s pattern.
+**How I verified:** Added the same film twice in an isolated in-memory database, confirmed the second call raised `AlreadyInWatchlistError`, and confirmed only one matching `WatchlistEntry` remained. I also ran the full existing test suite.
 
 ## Comment 3 — Missing test
 **What I did:**

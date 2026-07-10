@@ -39,16 +39,16 @@ I also used AI to stress-test the arguments for Comments 4 and 5. For default vi
 
 ## PR Description
 
-## Feature overview
+### Feature overview
 
 This PR adds a watchlist for films a user wants to watch later. It introduces UUID-backed `WatchlistEntry` records, registers watchlist REST endpoints, prevents the same user from adding the same film twice, returns film details with watchlist metadata, and adds service coverage for nonexistent film IDs.
 
-## Design decisions
+### Design decisions
 
 - **Default visibility:** New watchlist entries default to `public=True`. CineLog is designed around film discovery and sharing, so this default makes saved films immediately useful on a user's visible profile. This choice assumes the UI clearly discloses the default and makes privacy controls easy to use; without those safeguards, a private default would be safer.
 - **Default sort order:** Watchlists are sorted by `date_added` descending, with the newest additions first. This makes a recent save easy to confirm, reflects the user's current viewing intent, and matches the existing collection ordering. Alphabetical order remains a good candidate for a future optional sort mode.
 
-## Manual testing
+### Manual testing
 
 1. Create and activate a virtual environment, then install the dependencies:
 

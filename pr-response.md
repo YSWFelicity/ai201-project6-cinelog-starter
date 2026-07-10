@@ -12,8 +12,8 @@
 **How I verified:** Added the same film twice in an isolated in-memory database, confirmed the second call raised `AlreadyInWatchlistError`, and confirmed only one matching `WatchlistEntry` remained. I also ran the full existing test suite.
 
 ## Comment 3 — Missing test
-**What I did:**
-**How I verified:**
+**What I did:** Created `tests/test_watchlist.py` with an in-memory database fixture, a sample-user fixture, and `test_add_to_watchlist_nonexistent_film_raises()`. The test follows the collection test's structure and asserts that an unknown `film_id` raises `FilmNotFoundError` rather than a database integrity error.
+**How I verified:** Ran `.venv/bin/pytest tests/test_watchlist.py -v`; the new test passed. The system-level `pytest` could not collect the test because that interpreter does not have Flask installed, so I explicitly used the project's virtual environment.
 
 ## Comment 4 — Default visibility
 **My position:**

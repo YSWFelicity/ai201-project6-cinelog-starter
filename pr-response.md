@@ -30,5 +30,84 @@
 **How I resolved it:** I merged the `.gitignore` rules so the database, virtual environments, `__pycache__`, the broader Python cache pattern, compiled Python files, and `.pytest_cache` remain ignored. For the model integration, I restored `WatchlistEntry` using a UUID primary key and a `db.String(36)` foreign key to `film.id`, added its User and Film relationships, and added a database-level unique constraint for `(user_id, film_id)`. I updated the watchlist service docstring and route request documentation to describe `film_id` as a UUID string. The service continues to use `db.session.get(Film, film_id)`, which now receives the UUID value directly.
 **How I verified no conflict remains:** I searched the watchlist model, service, route, and test for integer or pre-refactor film-ID references and found none. I created films with generated UUIDs in an in-memory database, added them to a watchlist, and confirmed `get_watchlist()` returned the related films in newest-first order. The targeted watchlist test passed, the full suite passed all five tests, `git status` contained no unmerged paths, and `git rev-list --merges origin/main..HEAD` returned no commits, confirming the rebased feature history contains no merge commits.
 
+## Commit History Screenshot
+
+![Clean conventional commit history](screenshot/Screenshot.png)
+
 ## PR Description
-<!-- Written at the end — feature overview, design decisions, manual testing steps -->
+
+## Feature overview
+
+This PR adds a watchlist for films a user wants to watch later. It introduces UUID-backed `WatchlistEntry` records, registers watchlist REST endpoints, prevents the same user from adding the same film twice, returns film details with watchlist metadata, and adds service coverage for nonexistent film IDs.
+
+## Design decisions
+
+- **Default visibility:** New watchlist entries default to `public=True`. CineLog is designed around film discovery and sharing, so this default makes saved films immediately useful on a user's visible profile. This choice assumes the UI clearly discloses the default and makes privacy controls easy to use; without those safeguards, a private default would be safer.
+- **Default sort order:** Watchlists are sorted by `date_added` descending, with the newest additions first. This makes a recent save easy to confirm, reflects the user's current viewing intent, and matches the existing collection ordering. Alphabetical order remains a good candidate for a future optional sort mode.
+
+## Manual testing
+
+1. Create and activate a virtual environment, then install the dependencies:
+
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. Seed one user and two films from the Flask shell:
+
+   ```bash
+   flask --app app shell
+   ```
+
+   ```python
+   from app import db
+   from models import User, Film
+
+   user = User(username="manualtester", email="manual@example.com")
+   first_film = Film(title="Alien", year=1979, genre="Horror")
+   second_film = Film(title="Arrival", year=2016, genre="Sci-Fi")
+   db.session.add_all([user, first_film, second_film])
+   db.session.commit()
+   print(user.id, first_film.id, second_film.id)
+   exit()
+   ```
+
+3. Save the printed UUIDs as `USER_ID`, `FIRST_FILM_ID`, and `SECOND_FILM_ID`, then start the server in one terminal:
+
+   ```bash
+   export USER_ID="<printed-user-uuid>"
+   export FIRST_FILM_ID="<printed-alien-uuid>"
+   export SECOND_FILM_ID="<printed-arrival-uuid>"
+   flask --app app run
+   ```
+
+4. In another terminal, repeat the three `export` commands with the same UUIDs. Then add the first film to the watchlist and confirm the response is `201 Created` with UUID `film_id` and `"public": true`:
+
+   ```bash
+   curl -i -X POST "http://127.0.0.1:5000/watchlist/${USER_ID}/add" \
+     -H "Content-Type: application/json" \
+     -d "{\"film_id\":\"${FIRST_FILM_ID}\"}"
+   ```
+
+5. Add the second film using the same endpoint and its UUID:
+
+   ```bash
+   curl -i -X POST "http://127.0.0.1:5000/watchlist/${USER_ID}/add" \
+     -H "Content-Type: application/json" \
+     -d "{\"film_id\":\"${SECOND_FILM_ID}\"}"
+   ```
+
+6. Retrieve the watchlist and confirm `Arrival` appears before `Alien`, demonstrating newest-first ordering:
+
+   ```bash
+   curl "http://127.0.0.1:5000/watchlist/${USER_ID}"
+   ```
+
+7. Run the automated tests:
+
+   ```bash
+   pytest tests/test_watchlist.py -v
+   pytest -q
+   ```

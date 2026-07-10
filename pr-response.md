@@ -4,8 +4,8 @@
 <!-- Fill in at the end — how you used AI tools during this project -->
 
 ## Comment 1 — Rename
-**What I did:**
-**How I verified:**
+**What I did:** Renamed `save_to_watchlist()` to `add_to_watchlist()` to match the project's `verb_to_noun` service naming convention, then updated the watchlist route's import and call site.
+**How I verified:** Searched the entire project for both function names, confirmed there were no remaining `save_to_watchlist` references, and ran the test suite.
 
 ## Comment 2 — Deduplication
 **What I did:**

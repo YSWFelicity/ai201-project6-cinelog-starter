@@ -3,6 +3,7 @@
 *.db-journal
 instance/
 __pycache__/
+**pycache**/
 *.pyc
 .pytest_cache/
 .venv/
